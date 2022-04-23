@@ -1,0 +1,63 @@
+local TSM = {} --Tanjiro Sword Module
+TSM.__index = TSM
+
+function TSM:AttachSword(Torso, MdF) --Trs & Model folder
+	print("AttachSword Function Started")
+	
+	
+	
+	local TanSword = MdF.TS.TanjiroSword:Clone()
+	TanSword.Parent = Torso
+	
+	local SwordAttch = Instance.new("Motor6D")
+	SwordAttch.Parent = Torso
+	SwordAttch.Part0 = Torso
+	SwordAttch.Part1 = TanSword
+	SwordAttch.C1 = CFrame.new(-1, 0.5, -1) * CFrame.Angles(math.rad(-32), 0, 0)	
+end
+
+function TSM:WeldToArm(RArm, Torso)
+	local Sword = Torso:FindFirstChild("TanjiroSword")
+	local Weld = Torso:FindFirstChild("Motor6D")
+	Weld:Destroy()
+	
+	local ArmAttch = Instance.new("Motor6D")
+	ArmAttch.Parent = Torso
+	ArmAttch.Part0 = RArm
+	ArmAttch.Part1 = Sword
+	ArmAttch.C1 = CFrame.new(0, -1, -2) * CFrame.Angles(0, math.rad(180), math.rad(170)) --Y is math.rad(180) & Z is math.rad(170)
+	
+end
+
+function TSM:WeldToTorso(Torso)
+	local Sword = Torso:FindFirstChild("TanjiroSword")
+	local Weld = Torso:FindFirstChild("Motor6D")
+	Weld:Destroy()
+
+	local ArmAttch = Instance.new("Motor6D")
+	ArmAttch.Parent = Torso
+	ArmAttch.Part0 = Torso
+	ArmAttch.Part1 = Sword
+	ArmAttch.C1 = CFrame.new(-1, 0.5, -1) * CFrame.Angles(math.rad(-32), 0, 0)	
+end
+
+function TSM:EClickHitBox(Sword)
+	local ClickHitBox = Sword.SwordHitBox
+	ClickHitBox.CanTouch = true
+	local Touched = false
+	ClickHitBox.Touched:Connect(function(Hit)
+		local Char = Hit:FindFirstAncestorWhichIsA("Model")
+		if Char then
+			local Hum = Char:FindFirstChild("Humanoid") 
+			if Hum and Touched == false then
+				Touched = true
+				Hum:TakeDamage(5)
+				print("Touched Humanoid")
+			end
+		end	
+	end)
+	wait(.3)
+	ClickHitBox.CanTouch = false
+end
+
+return TSM
