@@ -1,0 +1,58 @@
+ocal Plrs = game:GetService("Players")
+local PlrCD = {} --Table for Plr Cooldowns 
+
+local SwordEventsF = game:GetService("ReplicatedStorage").Events.SwordEvents
+local SEquip = SwordEventsF.SEquip --Event to weld sword to torso
+local EHitBox = SwordEventsF.EnableHitBox
+
+--Attachin swords
+local ServerS = game:GetService("ServerStorage")
+local SwordM = require(ServerS.TSM)
+
+local RepS = game:GetService("ReplicatedStorage")
+local ModelsF = RepS.Models
+
+Plrs.PlayerAdded:Connect(function(Plr)
+	PlrCD[Plr] = {
+		EquipCD = false;
+		MouseCLickCD = false
+	}
+	local Chr = Plr.Character or Plr.CharacterAdded:Wait()
+	local Torso = Chr:WaitForChild("Torso")
+	
+	SwordM:AttachSword(Torso, ModelsF)
+	
+end)
+
+Plrs.PlayerRemoving:Connect(function(Plr)
+	PlrCD[Plr] = nil
+end)
+
+--Events
+
+--EquipSword event
+SEquip.OnServerEvent:Connect(function(Plr, RArm, Torso, Eqpd)
+	if PlrCD[Plr].EquipCD == false then
+		PlrCD[Plr].EquipCD = true
+		if Eqpd then
+			SwordM:WeldToTorso(Torso)
+			print("Unequiepped sword")
+		else
+			SwordM:WeldToArm(RArm, Torso)
+			print("Equipped sword")
+		end
+		wait(2)
+		PlrCD[Plr].EquipCD = false
+	end
+end)
+
+--MouseCombat Event
+EHitBox.OnServerEvent:Connect(function(Plr, Sword)
+	if PlrCD[Plr].MouseCLickCD == false then
+		PlrCD[Plr].MouseCLickCD = true
+		print("Mouse Combat")
+		SwordM:EClickHitBox(Sword)
+		wait(0.4)
+		PlrCD[Plr].MouseCLickCD = false
+	end
+end)
