@@ -1,2 +1,2 @@
 # LuaU
-This is script that were made for fighting system
+This script that were made for fighting system
